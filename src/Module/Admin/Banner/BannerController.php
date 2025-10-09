@@ -20,6 +20,9 @@ use Unicorn\Aws\S3Service;
 use Unicorn\Controller\CrudController;
 use Unicorn\Controller\GridController;
 use Unicorn\Upload\FileUploadManager;
+use Unicorn\Upload\FileUploadOptions;
+use Unicorn\Upload\FileUploadService;
+use Unicorn\Upload\ResizeConfig;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Attributes\Controller;
 use Windwalker\Core\Router\Navigator;
@@ -37,64 +40,67 @@ class BannerController
         CrudController $controller,
         Navigator $nav,
         #[Autowire] BannerRepository $repository,
-        FileUploadManager $fileUploadManager,
         BannerService $bannerService,
     ): mixed {
         $form = $app->make(EditForm::class);
 
         $controller->afterSave(
-            function (AfterSaveEvent $event) use ($bannerService, $repository, $fileUploadManager, $app) {
+            function (AfterSaveEvent $event) use ($bannerService, $repository, $app) {
                 /** @var Banner $entity */
-                $entity   = $event->getEntity();
-                $data     = &$event->getData();
-                $orm      = $event->getORM();
-                $category = $orm->findOne(Category::class, $entity->getCategoryId());
+                $entity = $event->getEntity();
+                $data = &$event->getData();
+                $orm = $event->getORM();
+                $category = $orm->findOne(Category::class, $entity->categoryId);
 
                 $config = $bannerService->getTypeConfig(
-                    $category?->getAlias() ?? $data['type'] ?? '_default'
+                    $category?->alias ?? $data['type'] ?? '_default'
                 );
 
                 $config['mobile'] ??= $config['desktop'];
 
                 if (!($config['desktop']['ajax'] ?? false)) {
-                    $uploader = $fileUploadManager->get($config['desktop']['profile'] ?? 'image');
+                    $uploader = $app->retrieve(FileUploadService::class, tag: $config['desktop']['profile'] ?? 'image');
                     $ext = $config['desktop']['image_ext'] ?? '{ext}';
 
                     $data['image'] = $uploader->handleFileIfUploaded(
                         $app->file('item')['image'] ?? null,
                         'images/banner/banner-' . md5((string) $data['id']) . '-image-desktop.' . $ext,
-                            [
-                                'resize' => [
-                                    'width' => $config['desktop']['width'] ?? 1080,
-                                    'height' => $config['desktop']['height'] ?? 800,
-                                    'crop' => $config['desktop']['crop'] ?? false,
-                                ],
-                                'ACL' => S3Service::ACL_PUBLIC_READ
+                        new FileUploadOptions(
+                            resize: new ResizeConfig(
+                                width: $config['desktop']['width'] ?? 1080,
+                                height: $config['desktop']['height'] ?? 800,
+                                crop: $config['desktop']['crop'] ?? false,
+                            ),
+                            storageOptions: [
+                                'ACL' => S3Service::ACL_PUBLIC_READ,
                             ]
+                        )
                     )
                         ?->getUri(true) ?? $data['image'];
                 }
 
                 if (!($config['mobile']['ajax'] ?? false)) {
-                    $uploader = $fileUploadManager->get($config['mobile']['profile'] ?? 'image');
+                    $uploader = $app->retrieve(FileUploadService::class, tag: $config['mobile']['profile'] ?? 'image');
                     $ext = $config['mobile']['image_ext'] ?? '{ext}';
 
                     $data['mobile_image'] = $uploader->handleFileIfUploaded(
                         $app->file('item')['mobile_image'] ?? null,
                         'images/banner/banner-' . md5((string) $data['id']) . '-image-mobile.' . $ext,
-                            [
-                                'resize' => [
-                                    'width' => $config['mobile']['width'] ?? 1080,
-                                    'height' => $config['mobile']['height'] ?? 800,
-                                    'crop' => $config['mobile']['crop'] ?? false,
-                                ],
-                                'ACL' => S3Service::ACL_PUBLIC_READ
+                        new FileUploadOptions(
+                            resize: new ResizeConfig(
+                                width: $config['mobile']['width'] ?? 1080,
+                                height: $config['mobile']['height'] ?? 800,
+                                crop: $config['mobile']['crop'] ?? false,
+                            ),
+                            storageOptions: [
+                                'ACL' => S3Service::ACL_PUBLIC_READ,
                             ]
+                        )
                     )
                         ?->getUri(true) ?? $data['mobile_image'];
                 }
 
-                $uploader = $fileUploadManager->get('image');
+                $uploader ??= $app->retrieve(FileUploadService::class, tag: 'image');
 
                 $data['video'] = $uploader->handleFileIfUploaded(
                     $app->file('item')['video_upload'] ?? null,
@@ -123,7 +129,8 @@ class BannerController
 
             case 'save2copy':
                 $controller->rememberForClone($app, $repository);
-                return $nav->self($nav::WITHOUT_VARS)->var('new', 1);
+
+                return $nav->selfNoQuery()->var('new', 1);
 
             default:
                 return $uri;

@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace Lyrasoft\Banner;
 
+use Lyrasoft\Banner\Entity\Banner;
 use Lyrasoft\Banner\Repository\BannerRepository;
 use Lyrasoft\Banner\Script\BannerScript;
 use Lyrasoft\Banner\Service\BannerService;
@@ -55,25 +56,10 @@ class BannerPackage extends AbstractPackage implements ServiceProviderInterface
         $installer->installSeeders(static::path('resources/seeders/**/*'), 'seeders');
         $installer->installRoutes(static::path('routes/**/*.php'), 'routes');
 
-        // Modules
-        $installer->installModules(
-            [
-                static::path("src/Module/Admin/Banner/**/*") => "@source/Module/Admin/Banner",
-            ],
-            ['Lyrasoft\\Banner\\Module\\Admin' => 'App\\Module\\Admin'],
-            ['modules', 'banner_admin'],
-        );
-
-        $installer->installModules(
-            [
-                static::path("src/Entity/Banner.php") => '@source/Entity',
-                static::path("src/Repository/BannerRepository.php") => '@source/Repository',
-            ],
-            [
-                'Lyrasoft\\Banner\\Entity' => 'App\\Entity',
-                'Lyrasoft\\Banner\\Repository' => 'App\\Repository',
-            ],
-            ['modules', 'banner_model']
+        $installer->installMVCModules(
+            Banner::class,
+            ['Admin'],
+            true
         );
     }
 }

@@ -61,12 +61,12 @@ class BannerEditView implements ViewModelInterface
         /** @var Banner $item */
         $item = $this->repository->getItem($id);
 
-        $category = $this->orm->findOne(Category::class, $item?->getCategoryId());
+        $category = $this->orm->findOne(Category::class, $item?->categoryId);
 
         if ($this->bannerService->getTypeEnum()) {
-            $type = $item?->getType();
+            $type = $item?->type;
         } else {
-            $type = $category?->getAlias();
+            $type = $category?->alias;
         }
 
         $form = $this->formFactory

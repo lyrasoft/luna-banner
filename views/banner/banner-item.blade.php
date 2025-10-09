@@ -37,7 +37,7 @@ $type = $type ?? $banner?->category?->alias ?? '_default';
 
 $bannerService = $app->service(BannerService::class);
 
-if ($banner->getVideo() || $banner->getMobileVideo()) {
+if ($banner->video || $banner->mobileVideo) {
     $app->service(BannerScript::class)->youtubeBackground();
 }
 
@@ -58,8 +58,8 @@ $mobileRatio = $bannerService->getImageRatio($type, true);
 
 $attributes = $attributes->class('l-swiper-banner-item position-relative');
 
-if ($banner->getLink()) {
-    $attributes['href'] = $banner->getLink();
+if ($banner->link) {
+    $attributes['href'] = $banner->link;
 }
 
 if ($linkTarget) {
@@ -75,20 +75,20 @@ if ($height) {
     $style = '--bs-aspect-ratio: ' . (100 / ($ratio ?? $desktopRatio)) . '%;';
 }
 
-$cover = $banner->getImage();
+$cover = $banner->image;
 
 if ($cover) {
-    $style .= "background-image: url({$cover}); background-position: cover;";
+    $style .= "background-image: url({$cover}); background-size: cover;";
 }
 
 ?>
 <a {!! $attributes !!}>
 {{-- Desktop --}}
-@if ($banner->getVideo() && $videoEnabled)
+@if ($banner->video && $videoEnabled)
     <div class="d-none d-md-block ratio"
         style="{{ $style }}"
     >
-        <div data-vbg="{{ $bannerService->handleVideoUrl($banner->getVideo()) }}"
+        <div data-vbg="{{ $bannerService->handleVideoUrl($banner->video) }}"
             data-vbg-mobile
             data-vbg-poster="{{ $cover }}"
         ></div>
@@ -98,7 +98,7 @@ if ($cover) {
         <img class="img-fluid"
             style="width: 100%; object-fit: cover"
             src="{{ $cover }}"
-            alt="{{ $banner->getTitle() }}"
+            alt="{{ $banner->title }}"
         >
     </div>
 @endif
@@ -111,44 +111,44 @@ if ($height) {
     $style = '--bs-aspect-ratio: ' . (100 / ($ratio ?? $mobileRatio)) . '%;';
 }
 
-$cover = $banner->getMobileImage() ?: $banner->getImage();
+$cover = $banner->mobileImage ?: $banner->image;
 
 if ($cover) {
-    $style .= "background-image: url({$cover}); background-position: cover;";
+    $style .= "background-image: url({$cover}); background-size: cover;";
 }
 ?>
 
-@if ($banner->getMobileVideo() && $videoEnabled)
+@if ($banner->mobileVideo && $videoEnabled)
     <div class="d-block d-md-none ratio"
         style="{{ $style }}"
     >
-        <div data-vbg="{{ $bannerService->handleVideoUrl($banner->getMobileVideo()) }}"
+        <div data-vbg="{{ $bannerService->handleVideoUrl($banner->mobileVideo) }}"
             data-vbg-mobile
             data-vbg-poster="{{ $cover }}"
         ></div>
     </div>
-@elseif (!$banner->getVideo() || !$videoEnabled)
+@elseif (!$banner->video || !$videoEnabled)
     <div class="d-block d-md-none ratio" style="{{ $style }}">
         <img class="img-fluid"
             style="width: 100%; object-fit: cover"
             src="{{ $cover }}"
-            alt="{{ $banner->getTitle() }}"
+            alt="{{ $banner->title }}"
         >
     </div>
 @endif
 
 @if ($showText)
     <div class="l-swiper-banner-item__text">
-        @if ($banner->getSubtitle())
+        @if ($banner->subtitle)
             <div class="l-swiper-banner-item__subtitle">
                 <h4>
-                    {{ $banner->getSubtitle() }}
+                    {{ $banner->subtitle }}
                 </h4>
             </div>
         @endif
-        @if ($banner->getDescription())
+        @if ($banner->description)
             <div class="l-swiper-banner-item__desc">
-                {!! html_escape($banner->getDescription(), true) !!}
+                {!! html_escape($banner->description, true) !!}
             </div>
         @endif
     </div>

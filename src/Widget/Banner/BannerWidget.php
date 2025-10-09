@@ -270,18 +270,18 @@ class BannerWidget extends AbstractWidget implements ViewModelInterface
     {
         $widget = $this->getData();
 
-        $params = collect($widget->getParams());
+        $params = collect($widget->params);
 
         if ($params['show_type'] === 'files') {
             $banners = collect();
 
             foreach ((array) $params['banners'] as $file) {
                 $banner = new Banner();
-                $banner->setLink($file['link']);
-                $banner->setImage($file['url']);
-                $banner->setTitle($file['title']);
-                $banner->setSubtitle($file['subtitle']);
-                $banner->setDescription($file['description']);
+                $banner->link = $file['link'];
+                $banner->image = $file['url'];
+                $banner->title = $file['title'];
+                $banner->subtitle = $file['subtitle'];
+                $banner->description = $file['description'];
 
                 $banners[] = $banner;
             }

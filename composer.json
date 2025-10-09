@@ -3,8 +3,8 @@
     "description": "Luna Banner package",
     "type": "windwalker-package",
     "require": {
-        "php": ">=8.2",
-        "lyrasoft/luna": "^2.0"
+        "php": ">=8.4.6",
+        "lyrasoft/luna": "^2.2"
     },
     "license": "MIT",
     "autoload": {

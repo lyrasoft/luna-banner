@@ -107,8 +107,8 @@ class BannerRepository implements ManageRepositoryInterface, ListRepositoryInter
     {
         $action->setReorderGroupHandler(
             function (Query $query, Banner $banner) {
-                $query->where('category_id', $banner->getCategoryId());
-                $query->where('type', $banner->getType());
+                $query->where('category_id', $banner->categoryId);
+                $query->where('type', $banner->type);
             }
         );
     }

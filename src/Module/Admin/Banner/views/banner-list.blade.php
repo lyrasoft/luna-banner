@@ -146,7 +146,7 @@ $videoEnabled = $app->config('banner.video_enabled') ?? true;
                     <tr>
                         {{-- Checkbox --}}
                         <td>
-                            <x-row-checkbox :row="$i" :id="$entity->getId()"></x-row-checkbox>
+                            <x-row-checkbox :row="$i" :id="$entity->id"></x-row-checkbox>
                         </td>
 
                         {{-- State --}}
@@ -155,7 +155,7 @@ $videoEnabled = $app->config('banner.video_enabled') ?? true;
                                 button-style="width: 100%"
                                 use-states
                                 :workflow="$workflow"
-                                :id="$entity->getId()"
+                                :id="$entity->id"
                                 :value="$item->state"
                             />
                         </td>
@@ -163,8 +163,8 @@ $videoEnabled = $app->config('banner.video_enabled') ?? true;
                         {{-- Image --}}
                         <td>
                             <a class="ratio ratio-16x9 d-block" style="object-fit: cover; width: 90px;"
-                                href="{{ $nav->to('banner_edit')->id($entity->getId()) }}">
-                                <img src="{{ $entity->getImage() ?: $entity->getMobileImage() }}" alt="image"
+                                href="{{ $nav->to('banner_edit')->id($entity->id) }}">
+                                <img src="{{ $entity->image ?: $entity->mobileImage }}" alt="image"
                                     style="width: 100%; height: 100%; object-fit: cover;">
                             </a>
                         </td>
@@ -172,59 +172,59 @@ $videoEnabled = $app->config('banner.video_enabled') ?? true;
                         {{-- Title --}}
                         <td>
                             <div class="mb-1">
-                                <a href="{{ $nav->to('banner_edit')->id($entity->getId()) }}">
+                                <a href="{{ $nav->to('banner_edit')->id($entity->id) }}">
                                     {{ $item->title }}
                                 </a>
                             </div>
                             <div>
-                                @if ($entity->getImage())
+                                @if ($entity->image)
                                     <a class="badge bg-warning has-tooltip"
                                         title="@lang('banner.action.preview')"
-                                        href="{{ $entity->getImage() }}"
+                                        href="{{ $entity->image }}"
                                         target="_blank"
                                     >
                                         <i class="far fa-image"></i>
                                         Desktop
                                     </a>
                                 @endif
-                                @if ($entity->getMobileImage())
+                                @if ($entity->mobileImage)
                                     <a class="badge bg-warning has-tooltip"
                                         title="@lang('banner.action.preview')"
-                                        href="{{ $entity->getMobileImage() }}"
+                                        href="{{ $entity->mobileImage }}"
                                         target="_blank"
                                     >
                                         <i class="far fa-image"></i>
                                         Mobile
                                     </a>
-                                @endif
+                                    @endif
                                 @if ($videoEnabled)
-                                    @if ($entity->getVideo())
+                                    @if ($entity->video)
                                         <a class="badge bg-danger has-tooltip"
                                             title="@lang('banner.action.preview')"
-                                            href="{{ $entity->getVideo() }}"
+                                            href="{{ $entity->video }}"
                                             target="_blank"
                                         >
                                             <i class="fa fa-video"></i>
                                             Desktop
                                         </a>
                                     @endif
-                                    @if ($entity->getMobileVideo())
+                                    @if ($entity->mobileVideo)
                                         <a class="badge bg-danger has-tooltip"
                                             title="@lang('banner.action.preview')"
-                                            href="{{ $entity->getMobileVideo() }}"
+                                            href="{{ $entity->mobileVideo }}"
                                             target="_blank"
                                         >
                                             <i class="fa fa-video"></i>
                                             Mobile
                                         </a>
                                     @endif
-                                @endif
+                                    @endif
                             </div>
                         </td>
 
                         <td>
                             @if ($typeEnum)
-                                {{ $typeEnum::wrap($entity->getType())->getTitle($lang) }}
+                                {{ $typeEnum::wrap($entity->type)->getTitle($lang) }}
                             @else
                                 {{ $item->category->title ?? '' }}
                             @endif
@@ -235,7 +235,7 @@ $videoEnabled = $app->config('banner.video_enabled') ?? true;
                             <x-order-control
                                 :enabled="$vm->reorderEnabled($ordering)"
                                 :row="$i"
-                                :id="$entity->getId()"
+                                :id="$entity->id"
                                 :value="$item->ordering"
                             ></x-order-control>
                         </td>
@@ -251,7 +251,7 @@ $videoEnabled = $app->config('banner.video_enabled') ?? true;
                         {{-- Delete --}}
                         <td class="text-center">
                             <button type="button" class="btn btn-sm btn-outline-secondary"
-                                @click="grid.deleteItem('{{ $entity->getId() }}')"
+                                @click="grid.deleteItem('{{ $entity->id }}')"
                                 data-dos
                             >
                                 <i class="fa-solid fa-trash"></i>
@@ -260,7 +260,7 @@ $videoEnabled = $app->config('banner.video_enabled') ?? true;
 
                         {{-- ID --}}
                         <td class="text-end">
-                            {{ $entity->getId() }}
+                            {{ $entity->id }}
                         </td>
                     </tr>
                 @endforeach
