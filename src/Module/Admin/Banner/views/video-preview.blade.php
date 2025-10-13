@@ -1,5 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
+namespace App\View;
+
 /**
  * Global variables
  * --------------------------------------------------------------
@@ -12,8 +16,7 @@
  * @var $lang      LangService     The language translation service.
  */
 
-declare(strict_types=1);
-
+use Lyrasoft\Banner\Enum\BannerVideoType;
 use Windwalker\Core\Application\AppContext;
 use Windwalker\Core\Asset\AssetService;
 use Windwalker\Core\DateTime\ChronosService;
@@ -31,7 +34,7 @@ use Windwalker\Core\Router\SystemUri;
 
 <div {!! $attributes !!}>
     @if ($field->getValue())
-        @if ($item->videoType->equals(\Lyrasoft\Banner\Enum\BannerVideoType::FILE))
+        @if ($item->videoType === BannerVideoType::FILE)
             <div class="ratio ratio-16x9">
                 <video src="{{ $field->getValue() }}" style="width: 100%; height: 100%;" class=""
                     controls
@@ -50,11 +53,11 @@ use Windwalker\Core\Router\SystemUri;
                 $id = $url->getPath();
             }
             ?>
-                <iframe width="100%" height="400" src="https://www.youtube.com/embed/{{ $id }}"
-                    title="YouTube video player"
-                    frameborder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowfullscreen></iframe>
+            <iframe width="100%" height="400" src="https://www.youtube.com/embed/{{ $id }}"
+                title="YouTube video player"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>
         @endif
     @endif
 </div>

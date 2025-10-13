@@ -13,19 +13,23 @@ composer require lyrasoft/banner
 Then copy files to project
 
 ```shell
-php windwalker pkg:install lyrasoft/banner -t routes -t lang -t migrations -t seeders
+php windwalker pkg:install lyrasoft/banner -t routes -t migrations -t seeders
 ```
 
 Seeders
 
-- Add `contact-seeder.php` to `resources/seeders/main.php`
-- Add `banner` type to `category-seeder.php`
+- Add `contact-seeder.php` to `resources/seeders/main.seeder.php`
+- Add `banner` type to `category.seeder.php`
 
 Languages
 
-If you don't want to copy language files, remove `-t lang` from install command.
+Run this command to copy language files:
 
-Then add this line to admin & front middleware:
+```shell
+php windwalker pkg:install lyrasoft/banner -t lang
+```
+
+If you want to directly use package language files without copy, add this line to admin & front middleware:
 
 ```php
 $this->lang->loadAllFromVendor(\Lyrasoft\Banner\BannerPackage::class, 'ini');
@@ -47,15 +51,15 @@ The default will use `category` mode. If you want to use `type` mode,
 you must create a `BannerType` enum, for example:
 
 ```php
-class BannerType extends Enum implements EnumTranslatableInterface
+enum BannerType: string implements EnumRichInterface
 {
-    use EnumTranslatableTrait;
+    use EnumRichTrait;
 
     #[Title('Home Banner')]
-    public const HOME = 'home';
+    case HOME = 'home';
 
     #[Title('Works')]
-    public const WORKS = 'works';
+    case WORKS = 'works';
 
     // ...
 }

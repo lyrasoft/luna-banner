@@ -26,18 +26,16 @@ use function Windwalker\value;
 
 return new /** Banner Seeder */ class extends AbstractSeeder {
     #[SeedImport]
-    public function import(): void
+    public function import(BannerService $bannerService): void
     {
         $faker = $this->faker('zh_TW');
 
-        /** @var BannerService $bannerService */
-        $bannerService = $this->container->get(BannerService::class);
         /** @var EntityMapper<Banner> $mapper */
         $mapper = $this->orm->mapper(Banner::class);
         // $langCodes = LocaleService::getSeederLangCodes($this->orm);
         $categoryIds = $this->orm->findColumn(Category::class, 'id', ['type' => 'banner'])->dump();
         $userIds = $this->orm->findColumn(User::class, 'id')->dump();
-        /** @var EnumTranslatableInterface $typeEnum */
+        /** @var EnumTranslatableInterface|\UnitEnum $typeEnum */
         $typeEnum = $bannerService->getTypeEnum();
 
         $mediaTypes = ['image', 'video'];
@@ -50,7 +48,7 @@ return new /** Banner Seeder */ class extends AbstractSeeder {
             $item->description = $faker->sentence(7);
 
             if ($typeEnum) {
-                $item->type = value($faker->randomElement($typeEnum::values()));
+                $item->type = value($faker->randomElement($typeEnum::cases()));
             } else {
                 $item->categoryId = (int) $faker->randomElement($categoryIds);
             }
@@ -62,7 +60,7 @@ return new /** Banner Seeder */ class extends AbstractSeeder {
                 $videoType = $faker->randomElement(BannerVideoType::cases());
                 $item->videoType = $videoType;
 
-                if ($videoType->equals(BannerVideoType::EMBED)) {
+                if ($videoType === BannerVideoType::EMBED) {
                     $item->video = 'https://www.youtube.com/watch?v=jfKfPfyJRdk';
                     $item->mobileVideo = 'https://www.youtube.com/watch?v=rUxyKA_-grg';
                 } else {
